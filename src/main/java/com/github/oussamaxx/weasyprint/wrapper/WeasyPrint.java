@@ -1,18 +1,30 @@
 package com.github.oussamaxx.weasyprint.wrapper;
 
 import com.github.oussamaxx.weasyprint.wrapper.exceptions.WeasyPrintConfigurationException;
+import com.github.oussamaxx.weasyprint.wrapper.params.Param;
+import com.github.oussamaxx.weasyprint.wrapper.params.Params;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.io.IOUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class WeasyPrint {
     private static final Logger logger = LoggerFactory.getLogger(WeasyPrint.class);
+
+    private static final String STDINOUT = "-";
+
+
     public static String weasyprintExecutableCommand = null;
+
+    private Params params;
 
 
     /**
@@ -28,6 +40,23 @@ public class WeasyPrint {
      */
     public WeasyPrint(String executable) {
         weasyprintExecutableCommand = executable;
+        params = new Params();
+    }
+
+    public void addParams(Param param, Param... params) {
+        this.params.add(param, params);
+    }
+
+    public void addParams(Params params) {
+        this.params.add(params);
+    }
+
+    public void addParam(String key, String... valueArray) {
+        this.params.add(new Param(key, valueArray));
+    }
+
+    public void setParams(Params params) {
+        this.params = params;
     }
 
     /**
@@ -57,4 +86,45 @@ public class WeasyPrint {
             throw new WeasyPrintConfigurationException("Failed while getting weasyprint executable.", e);
         }
     }
+
+
+
+    /**
+     * Get command as array string
+     *
+     * @return the weasyprint command as string array
+     */
+    protected String[] getCommandAsArray(Format format, String outputFilename) {
+        List<String> commandLine = new ArrayList<>();
+
+        commandLine.add(weasyprintExecutableCommand);
+
+        commandLine.add("-f " + format.label);
+
+        commandLine.addAll(params.getParamsAsStringList());
+
+        // todo add the input
+        commandLine.add((outputFilename != null) ? outputFilename : STDINOUT);
+        logger.debug("Command generated: {}", commandLine.toString());
+        return commandLine.toArray(new String[0]);
+    }
+
+    public String getCommand() {
+        return getCommand(Format.PDF);
+    }
+
+    public String getCommand(Format format) {
+        return getCommand(format, STDINOUT);
+    }
+
+    /**
+     * Gets the final weasyprint command as string
+     *
+     * @return the generated command from params
+     */
+    public String getCommand(Format format, String outputFilename) {
+        return StringUtils.join(getCommandAsArray(format, outputFilename), " ");
+    }
+
+
 }

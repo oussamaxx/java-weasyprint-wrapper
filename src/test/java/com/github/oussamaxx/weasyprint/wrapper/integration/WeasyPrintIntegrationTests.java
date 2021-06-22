@@ -26,8 +26,14 @@ public class WeasyPrintIntegrationTests {
     public void testHtmlInputTypes(){
         WeasyPrint wp = new WeasyPrint();
         String command = wp.html("http://google.com", SourceType.URL).getCommand("google.pdf");
-        System.out.println("command:" + command);
+        System.out.println("command 1: " + command);
         Assert.assertThat("command params should contain the http://google.com and google.pdf",
                 command, containsString("http://google.com google.pdf"));
+
+        wp.htmlFromFile("file.html");
+        System.out.println("command 2: " + wp.getCommand());
+        Assert.assertThat("command params should contain file.html",
+                wp.getCommand(), containsString("file.html"));
+
     }
 }

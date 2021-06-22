@@ -102,6 +102,23 @@ public class WeasyPrint {
         return this;
     }
 
+    /**
+     * sets the html source from a URL
+     *
+     * @return the weasyprint instance
+     */
+    public WeasyPrint htmlFromURL(String source){
+        return html(source, SourceType.URL);
+    }
+
+    /**
+     * sets the html source from a file path
+     *
+     * @return the weasyprint instance
+     */
+    public WeasyPrint htmlFromFile(String source){
+        return html(source, SourceType.FILE);
+    }
 
 
     /**

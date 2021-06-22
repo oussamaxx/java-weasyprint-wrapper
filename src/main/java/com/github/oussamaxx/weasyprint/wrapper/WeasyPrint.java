@@ -26,6 +26,10 @@ public class WeasyPrint {
 
     private Params params;
 
+    private String htmlSource = null;
+
+    private SourceType htmlSourceType = null;
+
 
     /**
      * Default constructor with no given executable path
@@ -87,6 +91,17 @@ public class WeasyPrint {
         }
     }
 
+    /**
+     * sets the html source
+     *
+     * @return the weasyprint instance
+     */
+    public WeasyPrint html(String source, SourceType type){
+        htmlSource = source;
+        htmlSourceType = type;
+        return this;
+    }
+
 
 
     /**
@@ -94,7 +109,7 @@ public class WeasyPrint {
      *
      * @return the weasyprint command as string array
      */
-    protected String[] getCommandAsArray(Format format, String outputFilename) {
+    protected String[] getCommandAsArray(String outputFilename, Format format) {
         List<String> commandLine = new ArrayList<>();
 
         commandLine.add(weasyprintExecutableCommand);
@@ -103,18 +118,19 @@ public class WeasyPrint {
 
         commandLine.addAll(params.getParamsAsStringList());
 
-        // todo add the input
+        commandLine.add((htmlSource !=null) ? htmlSource : STDINOUT);
+
         commandLine.add((outputFilename != null) ? outputFilename : STDINOUT);
         logger.debug("Command generated: {}", commandLine.toString());
         return commandLine.toArray(new String[0]);
     }
 
     public String getCommand() {
-        return getCommand(Format.PDF);
+        return getCommand(STDINOUT);
     }
 
-    public String getCommand(Format format) {
-        return getCommand(format, STDINOUT);
+    public String getCommand(String outputFilename) {
+        return getCommand(outputFilename, Format.PDF);
     }
 
     /**
@@ -122,8 +138,8 @@ public class WeasyPrint {
      *
      * @return the generated command from params
      */
-    public String getCommand(Format format, String outputFilename) {
-        return StringUtils.join(getCommandAsArray(format, outputFilename), " ");
+    public String getCommand(String outputFilename, Format format) {
+        return StringUtils.join(getCommandAsArray(outputFilename, format), " ");
     }
 
 

@@ -19,8 +19,8 @@ public class WeasyPrintUnitTests {
     @Test
     public void testParams() {
 
-        wp.addParams(new Param("--optimize-images"), new Param("--attachment", "test.txt"));
-        wp.addParam("-a", "oui.pdf");
+        wp.addParams(new Param("--optimize-images"), new Param("--attachment", "test.txt"))
+          .addParam("-a", "oui.pdf");
 
         Assert.assertThat("command params should contain the --optimize-images , --attachment and -a",
                 wp.getCommand(), containsString("--optimize-images --attachment test.txt -a oui.pdf"));

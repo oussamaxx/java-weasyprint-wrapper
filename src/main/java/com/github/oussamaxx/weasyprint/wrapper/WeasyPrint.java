@@ -57,16 +57,19 @@ public class WeasyPrint {
         params = new Params();
     }
 
-    public void addParams(Param param, Param... params) {
+    public WeasyPrint addParams(Param param, Param... params) {
         this.params.add(param, params);
+        return this;
     }
 
-    public void addParams(Params params) {
+    public WeasyPrint addParams(Params params) {
         this.params.add(params);
+        return this;
     }
 
-    public void addParam(String key, String... valueArray) {
+    public WeasyPrint addParam(String key, String... valueArray) {
         this.params.add(new Param(key, valueArray));
+        return this;
     }
 
     public void setParams(Params params) {

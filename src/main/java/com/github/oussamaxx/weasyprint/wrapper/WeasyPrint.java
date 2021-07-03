@@ -1,5 +1,6 @@
 package com.github.oussamaxx.weasyprint.wrapper;
 
+import com.github.oussamaxx.weasyprint.wrapper.exceptions.PDFExportException;
 import com.github.oussamaxx.weasyprint.wrapper.exceptions.WeasyPrintConfigurationException;
 import com.github.oussamaxx.weasyprint.wrapper.params.Param;
 import com.github.oussamaxx.weasyprint.wrapper.params.Params;
@@ -11,16 +12,18 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.*;
 
 
 public class WeasyPrint {
     private static final Logger logger = LoggerFactory.getLogger(WeasyPrint.class);
 
     private static final String STDINOUT = "-";
-
 
     public static String weasyprintExecutableCommand = null;
 
@@ -29,6 +32,13 @@ public class WeasyPrint {
     private String htmlSource = null;
 
     private SourceType htmlSourceType = null;
+
+    /**
+     * Timeout to wait while generating a PDF, in seconds
+     */
+    private int timeout = 10;
+
+    private List<Integer> successValues = new ArrayList<>(Collections.singletonList(0));
 
 
     /**
@@ -122,6 +132,117 @@ public class WeasyPrint {
 
 
     /**
+     * Generates a PDF file as byte array from the weasyprint output and save the result as a file
+     *
+     * @param path The path to the file where the PDF will be saved.
+     * @return the saved file File Object
+     * @throws IOException when not able to save the file
+     * @throws InterruptedException when the PDF generation process got interrupted
+     */
+    public File writePDF(String path) throws IOException, InterruptedException {
+        return writeFile(path, Format.PDF);
+    }
+
+    /**
+     * Generates a PNG file as byte array from the weasyprint output and save the result as a file
+     *
+     * @param path The path to the file where the PNG will be saved.
+     * @return the saved file File Object
+     * @throws IOException when not able to save the file
+     * @throws InterruptedException when the PNG generation process got interrupted
+     */
+    public File writePNG(String path) throws IOException, InterruptedException {
+        return writeFile(path, Format.PNG);
+    }
+
+
+    private File writeFile(String path, Format format) throws IOException, InterruptedException {
+        File file = new File(path);
+        FileUtils.writeByteArrayToFile(file, getFileBytes(format));
+        logger.info("File successfully saved in {}", file.getAbsolutePath());
+        return file;
+    }
+
+
+    /**
+     * Generates a PDF file as byte array from the weasyprint output
+     *
+     * @return the PDF file as a byte array
+     * @throws IOException when not able to save the file
+     * @throws InterruptedException when the PDF generation process got interrupted
+     * @throws PDFExportException when the weasyprint process fails
+     */
+    public byte[] getPDF() throws IOException, InterruptedException, PDFExportException {
+        return getFileBytes(Format.PDF);
+    }
+
+    /**
+     * Generates a PNG file as byte array from the weasyprint output
+     *
+     * @return the PNG file as a byte array
+     * @throws IOException when not able to save the file
+     * @throws InterruptedException when the PNG generation process got interrupted
+     * @throws PDFExportException when the weasyprint process fails
+     */
+    public byte[] getPNG() throws IOException, InterruptedException, PDFExportException {
+        return getFileBytes(Format.PNG);
+    }
+
+    /**
+     * return file(PDF/PNG) as byte array from the weasyprint output
+     *
+     * @return the file as a byte array
+     * @throws IOException when not able to save the file
+     * @throws InterruptedException when the PDF generation process got interrupted
+     * @throws PDFExportException when the weasyprint process fails
+     */
+    public byte[] getFileBytes(Format format) throws IOException, InterruptedException, PDFExportException {
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        try {
+            String command = getCommand();
+            logger.debug("Generating pdf with: {}", command);
+            Process process = Runtime.getRuntime().exec(getCommandAsArray(STDINOUT, format));
+
+            Future<byte[]> inputStreamToByteArray = executor.submit(streamToByteArrayTask(process.getInputStream()));
+            Future<byte[]> outputStreamToByteArray = executor.submit(streamToByteArrayTask(process.getErrorStream()));
+
+            process.waitFor();
+
+            if (!successValues.contains(process.exitValue())) {
+                byte[] errorStream = getFuture(outputStreamToByteArray);
+                logger.error("Error while generating pdf: {}", new String(errorStream));
+                throw new PDFExportException(command, process.exitValue(), errorStream, getFuture(inputStreamToByteArray));
+            } else {
+                logger.debug("weasyprint output:\n{}", new String(getFuture(outputStreamToByteArray)));
+            }
+
+            logger.info("PDF successfully generated with: {}", command);
+            return getFuture(inputStreamToByteArray);
+        } finally {
+            logger.debug("Shutting down executor for weasyprint.");
+            executor.shutdownNow();
+        }
+    }
+
+    private Callable<byte[]> streamToByteArrayTask(final InputStream input) {
+        return new Callable<byte[]>() {
+            public byte[] call() throws Exception {
+                return IOUtils.toByteArray(input);
+            }
+        };
+    }
+
+    private byte[] getFuture(Future<byte[]> future) {
+        try {
+            return future.get(this.timeout, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Get command as array string
      *
      * @return the weasyprint command as string array
@@ -131,7 +252,9 @@ public class WeasyPrint {
 
         commandLine.add(weasyprintExecutableCommand);
 
-        commandLine.add("-f " + format.label);
+        // weird behaviour when adding the space after "-f" weasyprint dosn't recognise the pdf type and thinks its
+        // ' pdf' rather than 'pdf'
+        commandLine.add("-f" + format.label);
 
         commandLine.addAll(params.getParamsAsStringList());
 

@@ -166,6 +166,44 @@ public class WeasyPrint {
         return file;
     }
 
+    /**
+     * Executes the weasyprint saving the PDF file directly to the specified file path.
+     *
+     * @param path The path to the file where the PDF file will be saved.
+     * @return the PDF file saved
+     * @throws IOException when not able to save the file
+     * @throws InterruptedException when the PDF file generation process got interrupted
+     */
+    public File writePDFAsDirect(String path) throws IOException, InterruptedException {
+        return writeFileAsDirect(path, Format.PDF);
+    }
+
+    /**
+     * Executes the weasyprint saving the PNG file directly to the specified file path.
+     *
+     * @param path The path to the file where the PNG file will be saved.
+     * @return the PNG file saved
+     * @throws IOException when not able to save the file
+     * @throws InterruptedException when the PNG file generation process got interrupted
+     */
+    public File writePNGAsDirect(String path) throws IOException, InterruptedException {
+        return writeFileAsDirect(path, Format.PNG);
+    }
+
+    /**
+     * Executes the weasyprint saving the results directly to the specified file path.
+     *
+     * @param path The path to the file where the file will be saved.
+     * @return the file saved
+     * @throws IOException when not able to save the file
+     * @throws InterruptedException when the file generation process got interrupted
+     */
+    public File writeFileAsDirect(String path, Format format) throws IOException, InterruptedException {
+        File file = new File(path);
+        executeProcess(file.getAbsolutePath(), format);
+        return file;
+    }
+
 
     /**
      * Generates a PDF file as byte array from the weasyprint output
@@ -194,19 +232,31 @@ public class WeasyPrint {
     /**
      * return file(PDF/PNG) as byte array from the weasyprint output
      *
-     * @return the file as a byte array
+     * @return the process inputStream as bytes
      * @throws IOException when not able to save the file
-     * @throws InterruptedException when the PDF generation process got interrupted
+     * @throws InterruptedException when the generation process got interrupted
      * @throws PDFExportException when the weasyprint process fails
      */
-    public byte[] getFileBytes(Format format) throws IOException, InterruptedException, PDFExportException {
+    public byte[] getFileBytes(Format format) throws IOException, InterruptedException, PDFExportException{
+        return executeProcess(STDINOUT, format);
+    }
+
+    /**
+     * return the process inputStream as bytes
+     *
+     * @return the process inputStream as bytes
+     * @throws IOException when not able to save the file
+     * @throws InterruptedException when the generation process got interrupted
+     * @throws PDFExportException when the weasyprint process fails
+     */
+    private byte[] executeProcess(String outputFilename, Format format) throws IOException, InterruptedException, PDFExportException {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
         try {
-            String command = getCommand();
+            String command = getCommand(outputFilename, format);
             logger.debug("Generating pdf with: {}", command);
-            Process process = Runtime.getRuntime().exec(getCommandAsArray(STDINOUT, format));
+            Process process = Runtime.getRuntime().exec(getCommandAsArray(outputFilename, format));
 
             Future<byte[]> inputStreamToByteArray = executor.submit(streamToByteArrayTask(process.getInputStream()));
             Future<byte[]> outputStreamToByteArray = executor.submit(streamToByteArrayTask(process.getErrorStream()));

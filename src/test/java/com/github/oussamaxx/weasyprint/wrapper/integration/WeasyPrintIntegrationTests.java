@@ -56,16 +56,23 @@ public class WeasyPrintIntegrationTests {
     @Test
     public void testWritePDF() throws IOException, InterruptedException {
         WeasyPrint wp = new WeasyPrint();
-        File saved_file  = wp.html("http://google.com", SourceType.URL).writePDF("test_google.pdf");
+        File saved_file  = wp.htmlFromURL("http://google.com").writePDF("test_google.pdf");
         Assert.assertTrue(saved_file.exists());
     }
 
     @Test
     public void testWritePNG() throws IOException, InterruptedException {
         WeasyPrint wp = new WeasyPrint();
-        File saved_file  = wp.html("http://google.com", SourceType.URL).writePNG("test_google.png");
+        File saved_file  = wp.htmlFromURL("http://google.com").writePNG("test_google.png");
         Assert.assertTrue(saved_file.exists());
 
+    }
+
+    @Test
+    public void testWritePDFAsDirect() throws IOException, InterruptedException {
+        WeasyPrint wp = new WeasyPrint();
+        File saved_file  = wp.htmlFromURL("http://google.com").writePDFAsDirect("test_google_direct.pdf");
+        Assert.assertTrue(saved_file.exists());
     }
 
     private String getPdfTextFromBytes(byte[] pdfBytes) throws IOException {

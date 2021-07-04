@@ -13,6 +13,10 @@ import org.apache.commons.io.IOUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,6 +119,8 @@ public class WeasyPrint {
         return this;
     }
 
+
+
     /**
      * sets the html source from a URL
      *
@@ -132,6 +138,17 @@ public class WeasyPrint {
     public WeasyPrint htmlFromFile(String source){
         return html(source, SourceType.FILE);
     }
+
+    /**
+     * sets the html source from String
+     *
+     * @return the weasyprint instance
+     */
+    public WeasyPrint htmlFromString(String source){
+        return html(source, SourceType.STRING);
+    }
+
+
 
 
     /**
@@ -259,16 +276,24 @@ public class WeasyPrint {
             Process process = Runtime.getRuntime().exec(getCommandAsArray(outputFilename, format));
 
             Future<byte[]> inputStreamToByteArray = executor.submit(streamToByteArrayTask(process.getInputStream()));
-            Future<byte[]> outputStreamToByteArray = executor.submit(streamToByteArrayTask(process.getErrorStream()));
+            Future<byte[]> errorStreamToByteArray = executor.submit(streamToByteArrayTask(process.getErrorStream()));
+
+            if(htmlSourceType == SourceType.STRING){
+                OutputStream stdin = process.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
+                writer.write(htmlSource);
+                writer.flush();
+                writer.close();
+            }
 
             process.waitFor();
 
             if (!successValues.contains(process.exitValue())) {
-                byte[] errorStream = getFuture(outputStreamToByteArray);
+                byte[] errorStream = getFuture(errorStreamToByteArray);
                 logger.error("Error while generating pdf: {}", new String(errorStream));
                 throw new PDFExportException(command, process.exitValue(), errorStream, getFuture(inputStreamToByteArray));
             } else {
-                logger.debug("weasyprint output:\n{}", new String(getFuture(outputStreamToByteArray)));
+                logger.debug("weasyprint output:\n{}", new String(getFuture(errorStreamToByteArray)));
             }
 
             logger.info("PDF successfully generated with: {}", command);
@@ -305,13 +330,19 @@ public class WeasyPrint {
 
         commandLine.add(weasyprintExecutableCommand);
 
-        // weird behaviour when adding the space after "-f" weasyprint dosn't recognise the pdf type and thinks its
+        // weird behaviour when adding the space after "-f" weasyprint doesn't recognise the pdf type and thinks its
         // ' pdf' rather than 'pdf'
         commandLine.add("-f" + format.label);
 
         commandLine.addAll(params.getParamsAsStringList());
 
-        commandLine.add((htmlSource !=null) ? htmlSource : STDINOUT);
+        // set encoding param to utf8 to fix blanc page when using STDIN
+        // todo: add utf8 constant in the instance
+        if(htmlSourceType == SourceType.STRING){
+            commandLine.add("-e utf8");
+        }
+
+        commandLine.add(htmlSourceType == SourceType.STRING ?  STDINOUT : htmlSource);
 
         commandLine.add((outputFilename != null) ? outputFilename : STDINOUT);
         logger.debug("Command generated: {}", commandLine.toString());

@@ -75,6 +75,16 @@ public class WeasyPrintIntegrationTests {
         Assert.assertTrue(saved_file.exists());
     }
 
+    @Test
+    public void testStringAsInput() throws IOException, InterruptedException {
+        WeasyPrint wp = new WeasyPrint();
+        byte[] result  = wp.htmlFromString("<html><b>uwu</b></html>")
+                .getPDF();
+        String resultAsString = getPdfTextFromBytes(result);
+        Assert.assertThat("the generated file bytes have uwu",
+                resultAsString, containsString("uwu"));
+    }
+
     private String getPdfTextFromBytes(byte[] pdfBytes) throws IOException {
         PDDocument pdDocument = PDDocument.load(new ByteArrayInputStream(pdfBytes));
         String text = new PDFTextStripper().getText(pdDocument);

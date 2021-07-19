@@ -1,5 +1,5 @@
 package com.github.oussamaxx.weasyprint.wrapper.integration;
-import com.github.oussamaxx.weasyprint.wrapper.Format;
+
 import com.github.oussamaxx.weasyprint.wrapper.SourceType;
 import com.github.oussamaxx.weasyprint.wrapper.WeasyPrint;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -83,6 +83,12 @@ public class WeasyPrintIntegrationTests {
         String resultAsString = getPdfTextFromBytes(result);
         Assert.assertThat("the generated file bytes have uwu",
                 resultAsString, containsString("uwu"));
+    }
+
+    @Test
+    public void testStringAsInputAndSave() throws IOException, InterruptedException {
+        WeasyPrint wp = new WeasyPrint();
+        wp.htmlFromString("<html><b>uwu</b></html>").writePDF("uwu_pdf.pdf");
     }
 
     private String getPdfTextFromBytes(byte[] pdfBytes) throws IOException {

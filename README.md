@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/github/license/oussamaxx/java-weasyprint-wrapper)]()
+
 # <img src="logo.svg" width="80" height="80" alt="what3words">&nbsp;WeasyPrint Java Wrapper
 
 A Java wrapper to use the [WeasyPrint](https://docs.what3words.com/api/v3/) command line tool.
@@ -31,9 +33,6 @@ implementation 'com.github.oussamaxx:java-weasyprint-wrapper:1.0-SNAPSHOT'
 
 
 ## General Usage And Examples
-
-while creating this wrapper I have tried to keep it as close as it can
-to the original Python library like using similar method names
 
 ```Java
 // init wp
@@ -93,6 +92,14 @@ you can check more examples in the test files
 ### Special thanks
 thanks to all the people behind the WeasyPrint project
 also big thanks to  [jhonnymertz](https://github.com/jhonnymertz) this project was hugely inspired  by his  [java-wkhtmltopdf-wrapper](https://github.com/jhonnymertz/java-wkhtmltopdf-wrapper)
+
+#### Other notes
+
+while creating the WeasyPrint class I have tried to keep it as close as it can
+to the original Python library :
+- Like using "almost" similar method names
+- Using method chaining
+- ...
 
 ### License
 This project is available under MIT Licence.

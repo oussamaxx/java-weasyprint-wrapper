@@ -74,7 +74,23 @@ But don't worry we still have the option to use PNG if you're using an old versi
 ```Java
 // all you have to do is to init wp with legacy flag
 WeasyPrint wp = new WeasyPrint(true);
+// or
+wp.setLegacy(true);
+// generate your PNG :)
 wp.htmlFromString("<html><b>uwu</b></html>").writePNG("uwu_png.png");
+```
+
+#### Adding parameters
+[Check the WeasyPrint documentation for parameters you can use](https://doc.courtbouillon.org/weasyprint/latest/api_reference.html#command-line-api)
+```Java
+// init wp
+WeasyPrint wp = new WeasyPrint();
+// adding parameters can be done in diffrent ways
+wp.addParams(new Param("--optimize-images"), new Param("--attachment", "test.txt"))
+          .addParam("-a", "oui.pdf");
+
+File saved_file  = wp.htmlFromURL("http://google.com").writePDF("test_google.pdf");
+
 ```
 
 #### More examples

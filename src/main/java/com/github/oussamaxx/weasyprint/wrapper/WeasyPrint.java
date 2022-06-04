@@ -407,5 +407,30 @@ public class WeasyPrint {
         return StringUtils.join(getCommandAsArray(outputFilename, format), Symbol.SEPARATOR.toString());
     }
 
+    /**
+     * Sets the timeout to wait while generating a PDF/PNG, in seconds
+     * @param timeout the timeout to wait in seconds
+     */
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    /**
+     * In standard process returns 0 means "ok" and any other value is an error.  However, weasyprint
+     * uses the return value to also return warning information which you may decide to ignore
+     *
+     * @param successValues The full list of process return values you will accept as a 'success'.
+     */
+    public void setSuccessValues(List<Integer> successValues) {
+        this.successValues = successValues;
+    }
+
+    /**
+     * Sets isLegacy (should be true if you have the legacy version (< v53.0) of weasyprint)
+     * @param isLegacy true if you have the legacy version (< v53.0) of weasyprint
+     */
+    public void setIsLegacy(boolean isLegacy) {
+        this.supportLegacy = isLegacy;
+    }
 
 }

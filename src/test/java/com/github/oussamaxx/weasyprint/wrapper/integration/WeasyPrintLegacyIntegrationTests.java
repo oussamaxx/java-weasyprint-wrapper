@@ -23,12 +23,14 @@ public class WeasyPrintLegacyIntegrationTests {
     @Test
     public void testWritePNG() throws IOException, InterruptedException {
         WeasyPrint wp = new WeasyPrint(leagacyWeasyExecutable, true);
+        wp.setTimeout(100);
         File saved_file  = wp.htmlFromURL("http://google.com").writePNG("test_google.png");
         Assert.assertTrue(saved_file.exists());
     }
     @Test
     public void generateGooglePDFFileBytes() throws IOException, InterruptedException {
         WeasyPrint wp = new WeasyPrint(leagacyWeasyExecutable, true);
+        wp.setIsLegacy(true);
         byte[] result = wp.html("http://google.com", SourceType.URL).getPDF();
         String resultAsString = getPdfText(result);
 
@@ -41,6 +43,12 @@ public class WeasyPrintLegacyIntegrationTests {
         WeasyPrint wp = new WeasyPrint(leagacyWeasyExecutable, true);
         byte[] result = wp.html("http://google.com", SourceType.URL).getPNG();
         Assert.assertNotNull(result);
+    }
+    @Test
+    public void testWritePNGAsDirect() throws IOException, InterruptedException {
+        WeasyPrint wp = new WeasyPrint(leagacyWeasyExecutable, true);
+        File saved_file  = wp.htmlFromURL("http://google.com").writePNGAsDirect("test_google_direct.png");
+        Assert.assertTrue(saved_file.exists());
     }
 
 

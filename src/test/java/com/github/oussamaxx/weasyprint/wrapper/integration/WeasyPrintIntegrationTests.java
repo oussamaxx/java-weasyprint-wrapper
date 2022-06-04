@@ -2,6 +2,7 @@ package com.github.oussamaxx.weasyprint.wrapper.integration;
 
 import com.github.oussamaxx.weasyprint.wrapper.SourceType;
 import com.github.oussamaxx.weasyprint.wrapper.WeasyPrint;
+import com.github.oussamaxx.weasyprint.wrapper.exceptions.PDFExportException;
 import com.github.oussamaxx.weasyprint.wrapper.exceptions.WeasyPrintConfigurationException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -13,6 +14,7 @@ import org.junit.rules.ExpectedException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.hamcrest.core.StringContains.containsString;
 
@@ -20,18 +22,18 @@ public class WeasyPrintIntegrationTests {
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
+    private final String leagacyWeasyExecutable = ".\\legacy_venv\\Scripts\\weasyprint.exe";
     @Test
     public void testWeasyPrintExecutableFinder()
     {
         WeasyPrint.foundedWeasyprintExecutableCommand = null;
         Assert.assertNull(WeasyPrint.foundedWeasyprintExecutableCommand);
-        WeasyPrint wp1 = new WeasyPrint();
+        WeasyPrint wp1 = new WeasyPrint(false);
         String commandAfterInitFirstObj = WeasyPrint.foundedWeasyprintExecutableCommand;
         Assert.assertNotNull(commandAfterInitFirstObj);
         WeasyPrint wp2 = new WeasyPrint();
         String commandAfterInitSecondObj = WeasyPrint.foundedWeasyprintExecutableCommand;
         Assert.assertEquals(commandAfterInitFirstObj, commandAfterInitSecondObj);
-
     }
 
     @Test
@@ -60,7 +62,7 @@ public class WeasyPrintIntegrationTests {
     }
     @Test
     public void generatePNGWithNoLegacy() throws IOException, InterruptedException {
-        WeasyPrint wp = new WeasyPrint();
+        WeasyPrint wp = new WeasyPrint(leagacyWeasyExecutable);
         exception.expect(WeasyPrintConfigurationException.class);
         byte[] result = wp.html("http://google.com", SourceType.URL).getPNG();
     }
@@ -107,6 +109,14 @@ public class WeasyPrintIntegrationTests {
         String resultAsString = getPdfText(saved_file);
         Assert.assertThat("the generated file bytes have uwu",
                 resultAsString, containsString("uwu"));
+    }
+    @Test
+    public void testSuccessValues() throws IOException, InterruptedException {
+        WeasyPrint wp = new WeasyPrint();
+        // overriding the default 0 in the success values
+        wp.setSuccessValues(Arrays.asList(4,5));
+        exception.expect(PDFExportException.class);
+        byte[] result = wp.htmlFromURL("http://google.com").getPDF();
     }
 
     private String getPdfText(byte[] pdfBytes) throws IOException {

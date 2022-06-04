@@ -126,7 +126,7 @@ public class WeasyPrint {
             foundedWeasyprintExecutableCommand = text;
             return text;
         } catch (InterruptedException | IOException e) {
-            logger.error("Fatal:", e);
+            Thread.currentThread().interrupt();
             throw new WeasyPrintConfigurationException("Failed while getting weasyprint executable.", e);
         }
     }
@@ -311,21 +311,25 @@ public class WeasyPrint {
             Future<byte[]> errorStreamToByteArray = executor.submit(streamToByteArrayTask(process.getErrorStream()));
 
             if(htmlSourceType == SourceType.STRING){
-                OutputStream stdin = process.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
-                writer.write(htmlSource);
-                writer.flush();
-                writer.close();
+                try(
+                    OutputStream stdin = process.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
+                ){
+                    writer.write(htmlSource);
+                    writer.flush();
+                }
             }
 
             process.waitFor();
 
             if (!successValues.contains(process.exitValue())) {
                 byte[] errorStream = getFuture(errorStreamToByteArray);
-                logger.error("Error while generating pdf: {}", new String(errorStream));
+                String error = new String(errorStream);
+                logger.error("Error while generating pdf: {}", error);
                 throw new PDFExportException(command, process.exitValue(), errorStream, getFuture(inputStreamToByteArray));
             } else {
-                logger.debug("weasyprint output:\n{}", new String(getFuture(errorStreamToByteArray)));
+                String error = new String(getFuture(errorStreamToByteArray));
+                logger.debug("weasyprint output:\n{}", error);
             }
 
             logger.info("PDF successfully generated with: {}", command);
@@ -348,6 +352,7 @@ public class WeasyPrint {
         try {
             return future.get(this.timeout, TimeUnit.SECONDS);
         } catch (Exception e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }
@@ -381,7 +386,7 @@ public class WeasyPrint {
         commandLine.add(htmlSourceType == SourceType.STRING ?  STDINOUT : htmlSource);
 
         commandLine.add((outputFilename != null) ? outputFilename : STDINOUT);
-        logger.debug("Command generated: {}", commandLine.toString());
+        logger.debug("Command generated: {}", commandLine);
         return commandLine.toArray(new String[0]);
     }
 

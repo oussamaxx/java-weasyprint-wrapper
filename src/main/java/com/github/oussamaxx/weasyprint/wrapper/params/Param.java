@@ -29,10 +29,10 @@ public class Param {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder().append(Symbol.separator)
-                .append(Symbol.param).append(key);
+        StringBuilder sb = new StringBuilder().append(Symbol.SEPARATOR)
+                .append(Symbol.PARAM).append(key);
         for (String value : values)
-            sb.append(Symbol.separator).append(value);
+            sb.append(Symbol.SEPARATOR).append(value);
         return sb.toString();
     }
 

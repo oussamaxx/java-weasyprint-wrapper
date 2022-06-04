@@ -2,17 +2,17 @@ package com.github.oussamaxx.weasyprint.wrapper.params;
 
 public enum Symbol {
 
-    separator(" "), param("");
+    SEPARATOR(" "), PARAM("");
 
-    private final String symbol;
+    private final String symbolStr;
 
     Symbol(String symbol) {
-        this.symbol = symbol;
+        this.symbolStr = symbol;
     }
 
     @Override
     public String toString() {
-        return symbol;
+        return symbolStr;
     }
 
 }

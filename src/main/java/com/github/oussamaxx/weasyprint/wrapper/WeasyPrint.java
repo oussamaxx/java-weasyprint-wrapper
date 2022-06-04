@@ -404,7 +404,7 @@ public class WeasyPrint {
      * @return the generated command from params
      */
     public String getCommand(String outputFilename, Format format) {
-        return StringUtils.join(getCommandAsArray(outputFilename, format), Symbol.separator.toString());
+        return StringUtils.join(getCommandAsArray(outputFilename, format), Symbol.SEPARATOR.toString());
     }
 
 

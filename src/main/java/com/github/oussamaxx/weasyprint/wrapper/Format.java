@@ -7,6 +7,6 @@ public enum Format {
         this.label = label;
     }
 
-    public String label;
+    String label;
 
 }

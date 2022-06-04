@@ -4,6 +4,7 @@ import com.github.oussamaxx.weasyprint.wrapper.exceptions.PDFExportException;
 import com.github.oussamaxx.weasyprint.wrapper.exceptions.WeasyPrintConfigurationException;
 import com.github.oussamaxx.weasyprint.wrapper.params.Param;
 import com.github.oussamaxx.weasyprint.wrapper.params.Params;
+import com.github.oussamaxx.weasyprint.wrapper.params.Symbol;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +32,11 @@ public class WeasyPrint {
 
     public static String weasyprintExecutableCommand = null;
 
+    /**
+     * Should be true if the WeasyPrint executable version supports PNG (from v53.0 and lower)
+     */
+    private Boolean supportLegacy = false;
+
     private Params params;
 
     private String htmlSource = null;
@@ -46,18 +52,33 @@ public class WeasyPrint {
 
 
     /**
-     * Default constructor with no given executable path
+     * Default constructor with no given executable path and no isLegacy
      */
     public WeasyPrint() {
-        this(weasyprintExecutableCommand==null ? findExecutable() : weasyprintExecutableCommand);
+        this(weasyprintExecutableCommand==null ? findExecutable() : weasyprintExecutableCommand, false);
     }
-
     /**
      * constructor with executable path given in the args
      * @param executable command/path to call the weasyprint executable
      */
     public WeasyPrint(String executable) {
+        this(executable, false);
+    }
+    /**
+     * constructor with executable path given in the args
+     * @param isLegacy true if the WeasyPrint executable version supports PNG (from v53.0 and lower)
+     */
+    public WeasyPrint(Boolean isLegacy) {
+        this(weasyprintExecutableCommand==null ? findExecutable() : weasyprintExecutableCommand, isLegacy);
+    }
+    /**
+     * constructor with both executable path and isLegacy given in the args
+     * @param executable command/path to call the weasyprint executable
+     * @param isLegacy true if the WeasyPrint executable version supports PNG (from v53.0 and lower)
+     */
+    public WeasyPrint(String executable, Boolean isLegacy) {
         weasyprintExecutableCommand = executable;
+        supportLegacy = isLegacy;
         params = new Params();
     }
 
@@ -167,10 +188,13 @@ public class WeasyPrint {
      * Generates a PNG file as byte array from the weasyprint output and save the result as a file
      *
      * @param path The path to the file where the PNG will be saved.
+     * @deprecated since v53.0 --format option has been deprecated, PDF is the only output format supported.
+     * tho it will work fine if using a legacy version (< v53.0)
      * @return the saved file File Object
      * @throws IOException when not able to save the file
      * @throws InterruptedException when the PNG generation process got interrupted
      */
+    @Deprecated
     public File writePNG(String path) throws IOException, InterruptedException {
         return writeFile(path, Format.PNG);
     }
@@ -199,10 +223,13 @@ public class WeasyPrint {
      * Executes the weasyprint saving the PNG file directly to the specified file path.
      *
      * @param path The path to the file where the PNG file will be saved.
+     * @deprecated since v53.0 --format option has been deprecated, PDF is the only output format supported.
+     * tho it will work fine if using a legacy version (< v53.0)
      * @return the PNG file saved
      * @throws IOException when not able to save the file
      * @throws InterruptedException when the PNG file generation process got interrupted
      */
+    @Deprecated
     public File writePNGAsDirect(String path) throws IOException, InterruptedException {
         return writeFileAsDirect(path, Format.PNG);
     }
@@ -238,10 +265,13 @@ public class WeasyPrint {
      * Generates a PNG file as byte array from the weasyprint output
      *
      * @return the PNG file as a byte array
+     * @deprecated since v53.0 --format option has been deprecated, PDF is the only output format supported.
+     * tho it will work fine if using a legacy version (< v53.0)
      * @throws IOException when not able to save the file
      * @throws InterruptedException when the PNG generation process got interrupted
      * @throws PDFExportException when the weasyprint process fails
      */
+    @Deprecated
     public byte[] getPNG() throws IOException, InterruptedException, PDFExportException {
         return getFileBytes(Format.PNG);
     }
@@ -326,13 +356,17 @@ public class WeasyPrint {
      * @return the weasyprint command as string array
      */
     protected String[] getCommandAsArray(String outputFilename, Format format) {
+        if(format == Format.PNG && !supportLegacy)
+            throw new WeasyPrintConfigurationException("You're trying to export PNG format with isLegacy = false " +
+                    "If you have the executable legacy version (< v53.0) please initiate an instance with isLegacy = true");
         List<String> commandLine = new ArrayList<>();
 
         commandLine.add(weasyprintExecutableCommand);
 
-        // weird behaviour when adding the space after "-f" weasyprint doesn't recognise the pdf type and thinks its
-        // ' pdf' rather than 'pdf'
-        commandLine.add("-f" + format.label);
+        if(supportLegacy){
+            commandLine.add("-f");
+            commandLine.add(format.label);
+        }
 
         commandLine.addAll(params.getParamsAsStringList());
 
@@ -363,7 +397,7 @@ public class WeasyPrint {
      * @return the generated command from params
      */
     public String getCommand(String outputFilename, Format format) {
-        return StringUtils.join(getCommandAsArray(outputFilename, format), " ");
+        return StringUtils.join(getCommandAsArray(outputFilename, format), Symbol.separator.toString());
     }
 
 

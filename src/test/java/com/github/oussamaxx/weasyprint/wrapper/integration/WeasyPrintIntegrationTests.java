@@ -2,10 +2,13 @@ package com.github.oussamaxx.weasyprint.wrapper.integration;
 
 import com.github.oussamaxx.weasyprint.wrapper.SourceType;
 import com.github.oussamaxx.weasyprint.wrapper.WeasyPrint;
+import com.github.oussamaxx.weasyprint.wrapper.exceptions.WeasyPrintConfigurationException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -13,11 +16,14 @@ import java.io.IOException;
 
 import static org.hamcrest.core.StringContains.containsString;
 
-
 public class WeasyPrintIntegrationTests {
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+
     @Test
     public void testWeasyPrintExecutableFinder()
     {
+        WeasyPrint.weasyprintExecutableCommand = null;
         Assert.assertNull(WeasyPrint.weasyprintExecutableCommand);
         WeasyPrint wp1 = new WeasyPrint();
         String commandAfterInitFirstObj = WeasyPrint.weasyprintExecutableCommand;
@@ -46,11 +52,17 @@ public class WeasyPrintIntegrationTests {
     public void generateGooglePDFFileBytes() throws IOException, InterruptedException {
         WeasyPrint wp = new WeasyPrint();
         byte[] result = wp.html("http://google.com", SourceType.URL).getPDF();
-        String resultAsString = getPdfTextFromBytes(result);
+        String resultAsString = getPdfText(result);
 
         Assert.assertThat("the generated file bytes have Google",
                 resultAsString, containsString("Google"));
 
+    }
+    @Test
+    public void generatePNGWithNoLegacy() throws IOException, InterruptedException {
+        WeasyPrint wp = new WeasyPrint();
+        exception.expect(WeasyPrintConfigurationException.class);
+        byte[] result = wp.html("http://google.com", SourceType.URL).getPNG();
     }
 
     @Test
@@ -63,9 +75,9 @@ public class WeasyPrintIntegrationTests {
     @Test
     public void testWritePNG() throws IOException, InterruptedException {
         WeasyPrint wp = new WeasyPrint();
+        exception.expect(WeasyPrintConfigurationException.class);
         File saved_file  = wp.htmlFromURL("http://google.com").writePNG("test_google.png");
-        Assert.assertTrue(saved_file.exists());
-
+        //Assert.assertTrue(saved_file.exists());
     }
 
     @Test
@@ -80,7 +92,7 @@ public class WeasyPrintIntegrationTests {
         WeasyPrint wp = new WeasyPrint();
         byte[] result  = wp.htmlFromString("<html><b>uwu</b></html>")
                 .getPDF();
-        String resultAsString = getPdfTextFromBytes(result);
+        String resultAsString = getPdfText(result);
         Assert.assertThat("the generated file bytes have uwu",
                 resultAsString, containsString("uwu"));
     }
@@ -88,11 +100,24 @@ public class WeasyPrintIntegrationTests {
     @Test
     public void testStringAsInputAndSave() throws IOException, InterruptedException {
         WeasyPrint wp = new WeasyPrint();
-        wp.htmlFromString("<html><b>uwu</b></html>").writePDF("uwu_pdf.pdf");
+        File saved_file = wp.htmlFromString("<html><b>uwu</b></html>").writePDF("uwu_pdf.pdf");
+        // check if the file exists
+        Assert.assertTrue("the file exists", saved_file.exists());
+        // check if the file contains uwu
+        String resultAsString = getPdfText(saved_file);
+        Assert.assertThat("the generated file bytes have uwu",
+                resultAsString, containsString("uwu"));
     }
 
-    private String getPdfTextFromBytes(byte[] pdfBytes) throws IOException {
+    private String getPdfText(byte[] pdfBytes) throws IOException {
         PDDocument pdDocument = PDDocument.load(new ByteArrayInputStream(pdfBytes));
+        String text = new PDFTextStripper().getText(pdDocument);
+
+        pdDocument.close();
+        return text;
+    }
+    private String getPdfText(File pdfFile) throws IOException {
+        PDDocument pdDocument = PDDocument.load(pdfFile);
         String text = new PDFTextStripper().getText(pdDocument);
 
         pdDocument.close();

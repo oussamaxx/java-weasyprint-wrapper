@@ -52,37 +52,29 @@ wp.htmlFromString("<html><b>uwu</b></html>")
 wp.htmlFromFile("file.html")
 
 ```
-#### export result either to PDF or PNG
+#### export result either to PDF (or PNG)
 
 ```Java
 // write to PDF
 wp.writePDF("uwu_pdf.pdf");
-// write to PNG
-wp.writePNG("uwu_pdf.pdf");
 
 // write directly using the the weasyprint process it self
 wp.writePDFAsDirect("uwu_pdf.pdf")
 ```
 
-Be careful PNG export won't be supported anymore by WeasyPrint version 53.0+
+⚠️ Be careful PNG is no longer supported by WeasyPrint version 53.0+
 
-from WeasyPrint Version 53.0 change logs (not released yet 7/19/2021) :
+from WeasyPrint Version 53.0 change logs :
 
     API changes:
     --format and --resolution options have been deprecated, PDF is the only output format supported.
 
+But don't worry we still have the option to use PNG if you're using an old version of WeasyPrint:
 
-#### Adding parameters
-[Check the WeasyPrint documentation for parameters you can use](https://doc.courtbouillon.org/weasyprint/latest/api_reference.html#command-line-api)
 ```Java
-// init wp
-WeasyPrint wp = new WeasyPrint();
-// adding parameters can be done in diffrent ways
-wp.addParams(new Param("--optimize-images"), new Param("--attachment", "test.txt"))
-          .addParam("-a", "oui.pdf");
-
-File saved_file  = wp.htmlFromURL("http://google.com").writePDF("test_google.pdf");
-
+// all you have to do is to init wp with legacy flag
+WeasyPrint wp = new WeasyPrint(true);
+wp.htmlFromString("<html><b>uwu</b></html>").writePNG("uwu_png.png");
 ```
 
 #### More examples

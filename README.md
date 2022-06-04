@@ -1,5 +1,6 @@
 [![License](https://img.shields.io/github/license/oussamaxx/java-weasyprint-wrapper)]()
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=oussamaxx_java-weasyprint-wrapper&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=oussamaxx_java-weasyprint-wrapper)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=oussamaxx_java-weasyprint-wrapper&metric=coverage)](https://sonarcloud.io/summary/new_code?id=oussamaxx_java-weasyprint-wrapper)
 # <img src="logo.svg" width="80" height="80" alt="what3words">&nbsp;WeasyPrint Java Wrapper
 
 A Java wrapper to use the [WeasyPrint](https://docs.what3words.com/api/v3/) command line tool.

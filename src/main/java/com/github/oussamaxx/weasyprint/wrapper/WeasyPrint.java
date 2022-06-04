@@ -30,7 +30,8 @@ public class WeasyPrint {
 
     private static final String STDINOUT = "-";
 
-    public static String weasyprintExecutableCommand = null;
+    public static String foundedWeasyprintExecutableCommand = null;
+    private String weasyprintExecutableCommand = null;
 
     /**
      * Should be true if the WeasyPrint executable version supports PNG (from v53.0 and lower)
@@ -55,7 +56,7 @@ public class WeasyPrint {
      * Default constructor with no given executable path and no isLegacy
      */
     public WeasyPrint() {
-        this(weasyprintExecutableCommand==null ? findExecutable() : weasyprintExecutableCommand, false);
+        this(foundedWeasyprintExecutableCommand==null ? findExecutable() : foundedWeasyprintExecutableCommand, false);
     }
     /**
      * constructor with executable path given in the args
@@ -69,7 +70,7 @@ public class WeasyPrint {
      * @param isLegacy true if the WeasyPrint executable version supports PNG (from v53.0 and lower)
      */
     public WeasyPrint(Boolean isLegacy) {
-        this(weasyprintExecutableCommand==null ? findExecutable() : weasyprintExecutableCommand, isLegacy);
+        this(foundedWeasyprintExecutableCommand==null ? findExecutable() : foundedWeasyprintExecutableCommand, isLegacy);
     }
     /**
      * constructor with both executable path and isLegacy given in the args
@@ -122,6 +123,7 @@ public class WeasyPrint {
                         "Verify its installation or initialize the WeasyPrint object with correct path/to/weasyprint");
 
             logger.debug("Wkhtmltopdf command found in classpath: {}", text);
+            foundedWeasyprintExecutableCommand = text;
             return text;
         } catch (InterruptedException | IOException e) {
             logger.error("Fatal:", e);

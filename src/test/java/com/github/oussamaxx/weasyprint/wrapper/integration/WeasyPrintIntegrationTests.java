@@ -23,13 +23,13 @@ public class WeasyPrintIntegrationTests {
     @Test
     public void testWeasyPrintExecutableFinder()
     {
-        WeasyPrint.weasyprintExecutableCommand = null;
-        Assert.assertNull(WeasyPrint.weasyprintExecutableCommand);
+        WeasyPrint.foundedWeasyprintExecutableCommand = null;
+        Assert.assertNull(WeasyPrint.foundedWeasyprintExecutableCommand);
         WeasyPrint wp1 = new WeasyPrint();
-        String commandAfterInitFirstObj = WeasyPrint.weasyprintExecutableCommand;
+        String commandAfterInitFirstObj = WeasyPrint.foundedWeasyprintExecutableCommand;
         Assert.assertNotNull(commandAfterInitFirstObj);
         WeasyPrint wp2 = new WeasyPrint();
-        String commandAfterInitSecondObj = WeasyPrint.weasyprintExecutableCommand;
+        String commandAfterInitSecondObj = WeasyPrint.foundedWeasyprintExecutableCommand;
         Assert.assertEquals(commandAfterInitFirstObj, commandAfterInitSecondObj);
 
     }

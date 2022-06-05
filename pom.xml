@@ -144,14 +144,12 @@
             <artifactId>jacoco-maven-plugin</artifactId>
             <executions>
               <execution>
-                <phase>test</phase>
                 <id>prepare-agent</id>
                 <goals>
                   <goal>prepare-agent</goal>
                 </goals>
               </execution>
               <execution>
-                <phase>test</phase>
                 <id>report</id>
                 <goals>
                   <goal>report</goal>

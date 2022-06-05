@@ -81,7 +81,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
 
@@ -109,12 +109,14 @@
       <groupId>org.sonarsource.scanner.maven</groupId>
       <artifactId>sonar-maven-plugin</artifactId>
       <version>3.9.1.2184</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.jacoco</groupId>
       <artifactId>jacoco-maven-plugin</artifactId>
       <version>0.8.8</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -142,12 +144,14 @@
             <artifactId>jacoco-maven-plugin</artifactId>
             <executions>
               <execution>
+                <phase>test</phase>
                 <id>prepare-agent</id>
                 <goals>
                   <goal>prepare-agent</goal>
                 </goals>
               </execution>
               <execution>
+                <phase>test</phase>
                 <id>report</id>
                 <goals>
                   <goal>report</goal>
@@ -180,6 +184,7 @@
             <version>2.2.1</version>
             <executions>
               <execution>
+                <phase>test</phase>
                 <id>attach-sources</id>
                 <goals>
                   <goal>jar-no-fork</goal>

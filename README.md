@@ -1,3 +1,7 @@
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=java&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+[![SonarCloud](https://img.shields.io/badge/Sonar%20cloud-F3702A?style=for-the-badge&logo=sonarcloud&logoColor=white)](https://sonarcloud.io/summary/new_code?id=oussamaxx_java-weasyprint-wrapper)
+
 [![License](https://img.shields.io/github/license/oussamaxx/java-weasyprint-wrapper)]()
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=oussamaxx_java-weasyprint-wrapper&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=oussamaxx_java-weasyprint-wrapper)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=oussamaxx_java-weasyprint-wrapper&metric=coverage)](https://sonarcloud.io/summary/new_code?id=oussamaxx_java-weasyprint-wrapper)
@@ -31,7 +35,12 @@ The artifact is available through <a href="https://search.maven.org/search?q=g:c
 ```
 implementation 'io.github.oussamaxx:java-weasyprint-wrapper:1.0-SNAPSHOT'
 ```
-
+For SNAPSHOT versions add this repository in repositories .gradle file:
+```
+maven {
+    url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+}
+```
 
 ## General Usage And Examples
 

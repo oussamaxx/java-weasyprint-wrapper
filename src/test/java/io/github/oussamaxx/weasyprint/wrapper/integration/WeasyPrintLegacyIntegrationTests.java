@@ -18,7 +18,8 @@ import static org.hamcrest.core.StringContains.containsString;
 public class WeasyPrintLegacyIntegrationTests {
     @Rule
     public final ExpectedException exception = ExpectedException.none();
-    private final String leagacyWeasyExecutable = ".\\legacy_venv\\Scripts\\weasyprint.exe";
+    String osname = System.getProperty("os.name").toLowerCase();
+    private final String leagacyWeasyExecutable = osname.contains("windows") ? ".\\legacy_venv\\Scripts\\weasyprint.exe" : "./legacy_venv/bin/weasyprint";
 
     @Test
     public void testWritePNG() throws IOException, InterruptedException {

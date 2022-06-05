@@ -1,4 +1,4 @@
-package com.github.oussamaxx.weasyprint.wrapper;
+package io.github.oussamaxx.weasyprint.wrapper;
 
 /**
  * Html source types accepted by weasyprint

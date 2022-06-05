@@ -1,8 +1,8 @@
-package com.github.oussamaxx.weasyprint.wrapper.unit;
+package io.github.oussamaxx.weasyprint.wrapper.unit;
 
-import com.github.oussamaxx.weasyprint.wrapper.WeasyPrint;
-import com.github.oussamaxx.weasyprint.wrapper.params.Param;
-import com.github.oussamaxx.weasyprint.wrapper.params.Params;
+import io.github.oussamaxx.weasyprint.wrapper.WeasyPrint;
+import io.github.oussamaxx.weasyprint.wrapper.params.Param;
+import io.github.oussamaxx.weasyprint.wrapper.params.Params;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

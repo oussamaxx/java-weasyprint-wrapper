@@ -1,4 +1,4 @@
-package com.github.oussamaxx.weasyprint.wrapper.params;
+package io.github.oussamaxx.weasyprint.wrapper.params;
 
 public enum Symbol {
 

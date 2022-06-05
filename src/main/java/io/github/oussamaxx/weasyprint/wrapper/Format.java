@@ -1,4 +1,4 @@
-package com.github.oussamaxx.weasyprint.wrapper;
+package io.github.oussamaxx.weasyprint.wrapper;
 
 public enum Format {
     PDF("pdf"), PNG("png");

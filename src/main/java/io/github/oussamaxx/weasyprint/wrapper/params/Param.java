@@ -1,4 +1,4 @@
-package com.github.oussamaxx.weasyprint.wrapper.params;
+package io.github.oussamaxx.weasyprint.wrapper.params;
 
 import java.util.ArrayList;
 import java.util.Arrays;

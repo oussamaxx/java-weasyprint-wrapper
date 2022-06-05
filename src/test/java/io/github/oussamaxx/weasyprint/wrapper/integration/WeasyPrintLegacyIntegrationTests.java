@@ -1,7 +1,7 @@
-package com.github.oussamaxx.weasyprint.wrapper.integration;
+package io.github.oussamaxx.weasyprint.wrapper.integration;
 
-import com.github.oussamaxx.weasyprint.wrapper.SourceType;
-import com.github.oussamaxx.weasyprint.wrapper.WeasyPrint;
+import io.github.oussamaxx.weasyprint.wrapper.SourceType;
+import io.github.oussamaxx.weasyprint.wrapper.WeasyPrint;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;

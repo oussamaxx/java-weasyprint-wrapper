@@ -1,9 +1,9 @@
-package com.github.oussamaxx.weasyprint.wrapper.integration;
+package io.github.oussamaxx.weasyprint.wrapper.integration;
 
-import com.github.oussamaxx.weasyprint.wrapper.SourceType;
-import com.github.oussamaxx.weasyprint.wrapper.WeasyPrint;
-import com.github.oussamaxx.weasyprint.wrapper.exceptions.PDFExportException;
-import com.github.oussamaxx.weasyprint.wrapper.exceptions.WeasyPrintConfigurationException;
+import io.github.oussamaxx.weasyprint.wrapper.SourceType;
+import io.github.oussamaxx.weasyprint.wrapper.WeasyPrint;
+import io.github.oussamaxx.weasyprint.wrapper.exceptions.PDFExportException;
+import io.github.oussamaxx.weasyprint.wrapper.exceptions.WeasyPrintConfigurationException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;

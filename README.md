@@ -20,7 +20,7 @@ The artifact is available through <a href="https://search.maven.org/search?q=g:c
 
 ```xml
 <dependency>
-  <groupId>com.github.oussamaxx</groupId>
+  <groupId>io.github.oussamaxx</groupId>
   <artifactId>java-weasyprint-wrapper</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
@@ -29,7 +29,7 @@ The artifact is available through <a href="https://search.maven.org/search?q=g:c
 ### Gradle
 
 ```
-implementation 'com.github.oussamaxx:java-weasyprint-wrapper:1.0-SNAPSHOT'
+implementation 'io.github.oussamaxx:java-weasyprint-wrapper:1.0-SNAPSHOT'
 ```
 
 

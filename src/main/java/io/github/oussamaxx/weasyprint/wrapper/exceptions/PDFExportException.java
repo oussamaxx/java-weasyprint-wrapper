@@ -1,4 +1,4 @@
-package com.github.oussamaxx.weasyprint.wrapper.exceptions;
+package io.github.oussamaxx.weasyprint.wrapper.exceptions;
 
 /**
  * Exception to describe and track pdf exporting errors

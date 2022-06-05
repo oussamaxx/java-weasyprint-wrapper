@@ -1,10 +1,10 @@
-package com.github.oussamaxx.weasyprint.wrapper;
+package io.github.oussamaxx.weasyprint.wrapper;
 
-import com.github.oussamaxx.weasyprint.wrapper.exceptions.PDFExportException;
-import com.github.oussamaxx.weasyprint.wrapper.exceptions.WeasyPrintConfigurationException;
-import com.github.oussamaxx.weasyprint.wrapper.params.Param;
-import com.github.oussamaxx.weasyprint.wrapper.params.Params;
-import com.github.oussamaxx.weasyprint.wrapper.params.Symbol;
+import io.github.oussamaxx.weasyprint.wrapper.exceptions.PDFExportException;
+import io.github.oussamaxx.weasyprint.wrapper.exceptions.WeasyPrintConfigurationException;
+import io.github.oussamaxx.weasyprint.wrapper.params.Param;
+import io.github.oussamaxx.weasyprint.wrapper.params.Params;
+import io.github.oussamaxx.weasyprint.wrapper.params.Symbol;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
